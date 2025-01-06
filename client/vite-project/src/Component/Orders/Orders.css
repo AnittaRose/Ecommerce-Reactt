@@ -1,0 +1,57 @@
+.order-card {
+    background-color: white;
+    border-radius: 50px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    max-width: 600px;
+    margin: 20px auto;
+  }
+  
+  .order-image {
+    border-radius: 50%;
+    overflow: hidden;
+    width: 60px;
+    height: 60px;
+    margin-right: 20px;
+  }
+  
+  .order-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .order-info {
+    flex-grow: 1;
+  }
+  
+  .order-info small {
+    display: block;
+    color: #888;
+  }
+  
+  .order-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .order-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .order-actions .btn {
+    /* border-radius: 50%; */
+    width: 40px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+.navba{
+  background-color: orangered;
+  /* border-radius: 25px; */
+  padding: 8px;
+}

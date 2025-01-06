@@ -1,0 +1,11 @@
+/* Hover effect for product box */
+.product:hover {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); /* Apply a larger shadow on hover */
+    transform: translateY(-5px); /* Lift the box slightly */
+  }
+  
+  /* Hover effect for image */
+  .img-hover:hover {
+    filter: brightness(1.2); /* Brighten the image on hover */
+  }
+  

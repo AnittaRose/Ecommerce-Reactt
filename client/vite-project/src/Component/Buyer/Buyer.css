@@ -1,0 +1,32 @@
+.trash{
+    width: 25px;
+}
+.navbaree{
+    background-color: orangered;
+    /* border-radius: 30px; */
+    height: 9vh;
+}
+.dropbtttn{
+    background-color: orangered;
+    /* height: 20vh; */
+}
+.greenn{
+    background-color:#2D5143;
+}
+.bggg{
+    background: transparent;
+    border: 2px solid white;
+    border-radius: 10px;
+}
+.subsc{
+    background-color: yellow;
+    width: 30vh;
+    border-radius: 8px;
+    color: black;
+}
+.logg{
+    background-color: transparent;
+}
+.logg:hover{
+    background-color: orangered;
+}

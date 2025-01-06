@@ -1,0 +1,76 @@
+*{
+    margin: 0;
+    padding: 0;
+  }
+  .input{
+    width: 100vh;
+    padding: 20px;
+    border-radius: 5px;
+    border: 2px solid orangered;
+    color: orangered;
+    font-size: 15px;
+    color: black;
+  }
+  .input::placeholder{
+    color: black;
+    font-weight: bold;
+  }
+  .SelectCategoriesinput{
+    width: 70vh;
+    padding: 20px;
+    border-radius: 5px;
+    border: 2px solid orangered;
+    /* background:rgb(255,205,187); */
+  }
+.SelectCategoriesinput::placeholder{
+  color: black;
+}
+  .footer{
+    width: 70vh;
+    border: 2px solid orangered;
+    padding: 18px;
+    border-radius: 5px;
+    background-color:transparent;
+  }
+  .subbttn{
+     width: 35vh;
+     padding: 5px;
+     border: 2px solid orangered;
+     border-radius: 5px;
+     background-color: white;
+     color: orangered;
+     font-size: 18px;
+     font-weight: bolder;
+  }
+  .form12{
+    /* background-color: rgba(255, 68, 0, 0.268); */
+    width: 108vh;
+    height: 100vh;
+  }
+.backgroundimg{
+  background-image: url(https://img.freepik.com/free-photo/top-view-frame-with-mascara-copy-space_23-2148301887.jpg?t=st=1735387195~exp=1735390795~hmac=1cb4950c92e87d7a7622090cffa365d2555d55c6808374bf6fd9a4175ee056a1&w=996);
+  background-position: center;
+  background-size: cover;
+  width: 214vh;
+  height: 100vh;
+}
+.form-control1{
+  width: 85vh;
+  padding: 10px;
+  background-color:#D9B88C;
+  border: 1px solid #D9B88C;
+  border-radius: 5px;
+}
+.form-select{
+  width: 85vh;
+  padding: 10px;
+  background-color:#D9B88C;
+  border: 1px solid #D9B88C;
+  border-radius: 5px;
+}
+.btnn123{
+  background-color: #D9B88C;
+}
+.btnn123:hover{
+  background-color: #D9B88C;
+}
