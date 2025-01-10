@@ -10,6 +10,7 @@ function Orders() {
   let token_key = params.get('login');
   let token = localStorage.getItem(token_key);
   let userId = params.get('id');
+  
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,6 +27,7 @@ function Orders() {
     const fetchOrdersAndProducts = async () => {
       try {
         // Fetch orders
+        const userId = localStorage.getItem("userId");
         const ordersResponse = await fetch(`http://localhost:3000/ViewOrders/${userId}`);
         if (!ordersResponse.ok) {
           throw new Error('Failed to fetch orders');

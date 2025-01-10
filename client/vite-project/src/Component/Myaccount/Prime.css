@@ -1,0 +1,50 @@
+.left-section {
+    background-color: #0073b1;
+    color: white;
+    padding: 20px;
+    border-radius: 10px 0 0 10px;
+}
+.left-section img {
+    max-width: 100%;
+    border-radius: 10px;
+}
+.right-section {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 0 10px 10px 0;
+}
+.pricing-table {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 135vh;
+}
+.pricing-table th, .pricing-table td {
+    text-align: center;
+    padding: 10px;
+}
+.pricing-table th {
+    background-color: #f8f9fa;
+}
+.pricing-table .highlight {
+    background-color: #e6f7ff;
+}
+.pricing-table .limited-offer {
+    color: red;
+    font-weight: bold;
+}
+.pricing-table .check {
+    color: green;
+}
+.pricing-table .cross {
+    color: red;
+}
+.join-button {
+    background-color: #ffa41c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: bold;
+}

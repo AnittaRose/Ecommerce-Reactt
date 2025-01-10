@@ -340,7 +340,7 @@ cursor: pointer;
 }
 
 
-.green{
+.greennn{
 background-color: rgb(45,81,67);
 padding-top: 5em;
 width: 121%;
@@ -419,4 +419,22 @@ border-radius: 8px;
   background-color: orangered;
   padding: 8px;
   /* border-radius: 20px; */
+}
+.titlee{
+  width: 50vh;
+}
+.desp{
+  width: 55vh;
+}
+strong{
+  width: 60vh;
+}
+.un{
+  width: 65vh;
+}
+.to{
+  width: 20vh;
+}
+.too{
+  width: 25vh;
 }

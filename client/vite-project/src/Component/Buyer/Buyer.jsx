@@ -1,23 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 
 function Buyer() {
     const params = new URLSearchParams(window.location.search);
     console.log("params", params);
 
+    const [userId, setUserId] = useState("")
+    const [products, setProducts] = useState([]);
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+
     // Fetch token and user id directly from URL params
     let token_key = params.get('login');
     let token = localStorage.getItem(token_key);
     console.log("Token:", token);
-
-    let userId = params.get('id');
+    
+    
+    let userid = params.get('id');
     console.log("User ID:", userId);
-  const [products, setProducts] = useState([]);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+ 
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -66,10 +71,33 @@ function Buyer() {
     fetchUser();
   }, []);
 
-  const handleAddToCart = (productId) => {
-    // Add to cart logic
-    console.log(`Added product ${productId} to cart`);
+
+  const handleAddToCart = async (productId, price) => {
+    try {
+      const authToken = localStorage.getItem("authToken");
+      const userId = localStorage.getItem("userId");
+      console.log("user id from localStorage:", userId);
+  
+      let quantity = 1;
+  
+      // Properly structure the data object
+      let response = await axios({
+        url: "http://localhost:3000/Addtocart",
+        method: "POST",
+        headers: {
+          "Authorization": `${authToken}`
+        },
+        data: { productId, userId, price, quantity } // Pass the data as an object
+      });
+  
+      console.log("response:", response);
+      let message = response.data.message;
+      alert(message);
+    } catch (error) {
+      console.log("error:", error.response || error);
+    }
   };
+  
 
   const handleAddToWishlist = (productId, price, title) => {
     // Add to wishlist logic
@@ -78,13 +106,15 @@ function Buyer() {
   const Single = (id) => {
     navigate(`/Single?login=${token_key}&productId=${id}&userId=${userId}`);
 };
-const Cart = (id) => {
-    navigate(`/Cart?login=${token_key}&id=${id}&userId=${userId}`);
-  };
+// const Cart = (id) => {
+//     navigate(`/Cart?login=${token_key}&id=${id}&userId=${userId}`);
+//   };
 
   const Wishlist = async (id) => {
     try {
         // Send POST request to add product to the wishlist
+        const userId = localStorage.getItem("userId");
+        console.log("user idddddddddd :",userId);
         const response = await axios.post('http://localhost:3000/addtowishlist', {
             userId,
             productId: id,
@@ -132,28 +162,32 @@ const Onsok = () =>{
 }
 
 
-const UpgradetoSeller = async () => {
-  try {
-    // Make an API call to the backend to upgrade the user to a seller
-    const response = await axios.put(`http://localhost:3000/buyerUpgrade/${userId}`);
+// const UpgradetoSeller = async () => {
+//   try {
+//     // Make an API call to the backend to upgrade the user to a seller
+//     const response = await axios.put(`http://localhost:3000/buyerUpgrade/${userId}`);
 
-    console.log("response", response);
+//     console.log("response", response);
 
-    if (response.status === 200) {
-      // If the response is successful, navigate to the next page
-      navigate('/login');
-      alert('User successfully upgraded to seller');
-    } else {
-      // Handle errors like already a seller or other API errors
-      alert(response.data.message || 'Failed to upgrade user');
-    }
-  } catch (error) {
-    console.error(error);
-    // Handle network or other errors
-    alert(error.response?.data?.message || 'An error occurred while upgrading the user');
-  }
+//     if (response.status === 200) {
+//       // If the response is successful, navigate to the next page
+//       navigate('/login');
+//       alert('User successfully upgraded to seller');
+//     } else {
+//       // Handle errors like already a seller or other API errors
+//       alert(response.data.message || 'Failed to upgrade user');
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     // Handle network or other errors
+//     alert(error.response?.data?.message || 'An error occurred while upgrading the user');
+//   }
+// };
+
+
+const UpgradetoSeller = () => {
+  navigate(`/UpgradeRequestPage?login=${token_key}&id=${userId}`);
 };
-
 
 
 
@@ -188,31 +222,25 @@ const UpgradetoSeller = async () => {
     }
 };
 
+const Shop = () => {
+  navigate(`/Shop?login=${token_key}&id=${userId}`);
+};
+
   return (
     <>
-      <div className="p-4">
-        <div className="d-flex justify-content-evenly navbaree">
-          <div className="d-flex">
-            <div className="Onsko p-2 link-light" onClick={() => Onsok(userId)}>Onsko</div>
-            <div className="home p-2">
-              <a href="./index.html" className="login link-light">
-                Home
-              </a>
-            </div>
-            <div className="home p-2">
-              <a href="" className=" link-light text-decoration-none">Store</a>
-            </div>
-            <div className="home p-2">
-              <a href="" className="login link-light">
-                About
-              </a>
-            </div>
-            <div className="home p-2">
-              <a href="" className="login link-light">
-                Contact
-              </a>
-            </div>
-          </div>
+{/* <div className='pt-3'>
+    <div className="header">
+        <div className="logo">
+        <div className="Onsko p-2 link-light" onClick={() => Onsok(userId)}>Onsko</div>
+        </div>
+        <div className="nav">
+          <a href="#">Home</a>
+          <a href="#">shop</a>
+          <a href="#">about</a>
+          <a href="#">about</a>
+          <a href="#">about</a>
+
+        </div>
           <div className="d-flex">
             <div className="profile">
               {user ? (
@@ -222,7 +250,6 @@ const UpgradetoSeller = async () => {
                     <span><strong></strong></span>
                   </button>
                   <div className="dropdown-content pt-3" role="menu">
-                    {/* <div className=""><button onClick={()=>Add(userId)} className="bttn">Add product</button></div> */}
                     <div className="dropdown-item pt-3" tabIndex="0"><button onClick={() => Myaccount(userId)} className="bttn">My Account</button></div>
                     <div className='pt-3'>
                                             <button onClick={Orders} className="dropmybtn">Orders</button>
@@ -233,8 +260,10 @@ const UpgradetoSeller = async () => {
                     <div className="dropdown-item pt-3" tabIndex="0"><button onClick={UpgradetoSeller} className="bttn">Upgrade to Seller</button></div>
                   </div>
                 </div>
+            
               ) : null}
             </div>
+          </div>
             
             <div className="p-2 home">
               
@@ -256,9 +285,62 @@ const UpgradetoSeller = async () => {
             </div>
             <div className='pt-1 px-3'><button className='logg' onClick={logout}>Logout</button></div>
           </div>
-        </div>
-      </div>
+</div> */}
       
+
+      <div className='pt-3'>
+  <div className="header d-flex justify-content-between align-items-center">
+    {/* Left side: Onsko, Home, Shop, About */}
+    <div className="d-flex">
+      <div className="logo">
+        <div className=" fw-bold  link-light" onClick={() => Onsok(userId)}>Onsko</div>
+      </div>
+      <div className="nav d-flex">
+        <a href="" className='px-3'>Home</a>
+        {/* <Link to="/Shop" className="login11 link-light">Shop</Link> */}
+        <span className='fw-bold' onClick={Shop}>Shop</span>
+        <Link to="/About" className="login11 link-light">About</Link>
+        <Link to="/Contact" className="login11 link-light">Contact</Link>
+      </div>
+    </div>
+
+    {/* Right side: Profile, Cart, Search, Logout */}
+    <div className="d-flex align-items-center">
+      <div className="profile">
+        {user ? (
+          <div className="text-center dropdown">
+            <button className="dropbtttn px-3" aria-haspopup="true" aria-expanded="false" role="button">
+              <span className="text-break"><strong>Hello,</strong> {user.name}</span><br />
+            </button>
+            <div className="dropdown-content pt-3" role="menu">
+              <div className="dropdown-item pt-3" tabIndex="0"><button onClick={() => Myaccount(userId)} className="bttn">My Account</button></div>
+              <div className='pt-3'>
+                <button onClick={Orders} className="dropmybtn">Orders</button>
+              </div>
+              <div className='pt-3'>
+                <button onClick={WishLists} className="dropmybtn">WishList</button>
+              </div>
+              <div className="dropdown-item pt-3" tabIndex="0"><button onClick={UpgradetoSeller} className="bttn">Upgrade to Seller</button></div>
+            </div>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="p-2 home">
+        <img onClick={GotoCart} src="https://img.icons8.com/?size=100&id=15893&format=png&color=000000" alt="cart" className="cart" />
+      </div>
+
+      <div className="p-2 home">
+        <img src="https://img.icons8.com/?size=100&id=132&format=png&color=000000" alt="search" className="search" />
+      </div>
+
+      <div className='pt-1 px-3'>
+        <button className='logg' onClick={logout}>Logout</button>
+      </div>
+    </div>
+  </div>
+</div>
+
       <div id="datacontainer" className="product-container">
     {products.length > 0 ? (
         products.map((item) => (
@@ -279,7 +361,7 @@ const UpgradetoSeller = async () => {
                     <p>{item.Description.slice(0, 40)}</p>
                     <p>Rs.{item.Price}</p>
                     <div className="button-container">
-                        <button onClick={() => Cart(item._id)}>
+                        <button onClick={() => handleAddToCart(item._id,item.price)}>
                             Add To Cart
                         </button>
                         <button onClick={() => Wishlist(item._id)}>

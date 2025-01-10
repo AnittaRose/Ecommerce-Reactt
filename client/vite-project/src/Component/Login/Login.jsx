@@ -261,6 +261,7 @@ function Login() {
       let token_key = id;
 
       localStorage.setItem(id, token);
+      localStorage.setItem("userId",id);
 
       // Redirect based on user type
       if (user_type === "Admin") {

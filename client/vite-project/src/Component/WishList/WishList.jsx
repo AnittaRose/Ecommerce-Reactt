@@ -25,26 +25,35 @@ function WishListproducts() {
     const fetchWishlistAndProducts = async () => {
       try {
         // Fetch wishlist
-        const wishlistResponse = await fetch(`http://localhost:3000/ViewWishlist/${userId}`);
-        if (!wishlistResponse.ok) {
-          throw new Error('Failed to fetch wishlist');
-        }
-        const wishlistData = await wishlistResponse.json();
+        const userId = localStorage.getItem("userId");
+        console.log("userIdddddd:",userId);
+        const wishlistResponse = await axios.get(`http://localhost:3000/ViewWishlist/${userId}`);
+        
+        const wishlistData  = wishlistResponse.data;
+        console.log("wishlist response :",wishlistData);
+
         const fetchedWishlist = Array.isArray(wishlistData.wishlist) ? wishlistData.wishlist : [];
         console.log("fetchedWishlist", wishlistData.wishlist);
-
+  
         // Fetch products
         const productsResponse = await axios.get('http://localhost:3000/View');
         const fetchedProducts = productsResponse.data.data;
         console.log("fetchedProducts", fetchedProducts);
-
-        // Match wishlist items with products by product_id
-        const matchedWishlist = fetchedProducts.filter((product) =>
-          fetchedWishlist.some((item) => item.productId === product._id)
-        );
-
+  
+        // Match wishlist items with products by product_id and handle blocked products
+        const matchedWishlist = fetchedProducts.map((product) => {
+          const isInWishlist = fetchedWishlist.some((item) => item.productId === product._id);
+          if (isInWishlist) {
+            return {
+              ...product,
+              isUnavailable: product.isBlocked, // Add a flag for blocked products
+            };
+          }
+          return null;
+        }).filter(Boolean); // Remove null values
+  
         console.log("matchedWishlist", matchedWishlist);
-
+  
         setWishlist(matchedWishlist);
         setProducts(fetchedProducts);
       } catch (err) {
@@ -53,9 +62,10 @@ function WishListproducts() {
         setLoading(false);
       }
     };
-
+  
     fetchWishlistAndProducts();
   }, [userId, token]);
+  
 
   if (loading) {
     return <div>Loading wishlist...</div>;
@@ -64,6 +74,32 @@ function WishListproducts() {
   if (error) {
     return <div>Error: {error}</div>;
   }
+
+
+  const deleteWishlistProduct = async (itemId) => {
+    try {
+      console.log(`Deleting product with ID: ${itemId}`);
+
+      let params = new URLSearchParams(window.location.search);
+      let token_key = params.get("login");
+      let token = localStorage.getItem(token_key);
+
+      await fetch(`http://localhost:3000/wishlistproducts/${itemId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log(`Product with ID: ${itemId} deleted successfully.`);
+      setWishlist((prevWishlist) =>
+        prevWishlist.filter((item) => item._id !== itemId)
+      );
+    } catch (error) {
+      console.error(`Error deleting product with ID ${itemId}:`, error);
+      alert("Failed to delete the product. Please try again later.");
+    }
+  };
 
   return (
     <>
@@ -96,14 +132,19 @@ function WishListproducts() {
               <div className="order-details">
                 <h3>{matchedProduct?.name || item.name}</h3>
                 <p><strong>Title:</strong> {item.Title}</p>
-                <p><strong>Price:</strong> ${matchedProduct?.Price || item.Price}</p>
+                {item.isUnavailable ? (
+  <span style={{ color: 'red', fontWeight: 'bold' }}>Unavailable</span>
+) : (
+  <p>Price: ${item.Price}</p>
+)}
+
                 <p><strong>Description:</strong> {matchedProduct?.Description || item.Description.slice(0,100) || 'No description available'}</p>
               </div>
               <div className="order-actions px-3 w-25">
                 {/* <button className="btn btn-outline-primary">
                   <i className="fas fa-shopping-bag"></i> Buy Now
                 </button> */}
-                <button className="btn btn-outline-primary">
+                <button className="btn btn-outline-primary" onClick={() => deleteWishlistProduct(item._id)}>
                   <i className="fas fa-trash"></i> Remove from Wishlist
                 </button>
               </div>

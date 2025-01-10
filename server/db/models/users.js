@@ -1,102 +1,105 @@
 
-const mongoose = require('mongoose');
+    const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
-            name: { 
-                type: String 
-            },
-            email: { 
-                type: String
-            },
-            phoneno: { 
-                type: String,
-            },
-            password :{
-                type:String
-            },
-            user_type:{
+    const userSchema = new mongoose.Schema({
+                name: { 
+                    type: String 
+                },
+                email: { 
+                    type: String
+                },
+                phoneno: { 
+                    type: String,
+                },
+                password :{
+                    type:String
+                },
+                address :[{
+                    type:Object,
+                }],
+                user_type:{
 
-                type :mongoose.Schema.Types.ObjectId,
-                ref : "usertypes"
-            },
-            addCart: [
-                {
-                 items : [
-        
+                    type :mongoose.Schema.Types.ObjectId,
+                    ref : "usertypes"
+                },
+                addCart: [
                     {
-                        productId: {
-                            type: mongoose.Schema.Types.ObjectId,
-                            ref: 'AddProduct', // Reference to the Product collection
-                            // required: true,
-                        },
-                        quantity: {
+                    items : [
+            
+                        {
+                            productId: {
+                                type: mongoose.Schema.Types.ObjectId,
+                                ref: 'AddProduct', // Reference to the Product collection
+                                // required: true,
+                            },
+                            quantity: {
+                                type: Number,
+                                // required: true,
+                                min: 0,
+                            },
+                            price: {
+                                type: Number,
+                                // required: true,
+                            },
+                        }
+                    ],
+                        totalPrice: {
                             type: Number,
-                            // required: true,
-                            min: 0,
-                        },
-                        price: {
-                            type: Number,
-                            // required: true,
-                        },
+                            default: 0,
+                        }
+            
                     }
-                 ],
-                    totalPrice: {
-                        type: Number,
-                        default: 0,
-                    }
-        
-                }
-            ],
-            wishlist: [
-                {
-                    productId: {
-                        type: mongoose.Schema.Types.ObjectId,
-                        ref: 'products', // Reference to the Product collection
-                        // required: true,
-                    },
-                    Title: {
-                        type: String, // Optional product name for display
-                        // required: true,
-                    },
-                    Price: {
-                        type: Number, // Optional product price for display
-                        // required: true,
-                    }
-                }
-            ],
-            isBlocked: {
-                type: Boolean,
-                default: false, // New sellers are not blocked by default
-            },
-
-            order: {
-                products: [
+                ],
+                wishlist: [
                     {
                         productId: {
                             type: mongoose.Schema.Types.ObjectId,
                             ref: 'products', // Reference to the Product collection
+                            // required: true,
                         },
-                        quantity: {
-                            type: Number,
-                            min: 1,
+                        Title: {
+                            type: String, // Optional product name for display
+                            // required: true,
                         },
-                        price: {
-                            type: Number,
-                        },
-                        purchaseDate: {
-                            type: Date,
-                            default: Date.now,
-                        },
+                        Price: {
+                            type: Number, // Optional product price for display
+                            // required: true,
+                        }
                     }
                 ],
-                totalPrice: {
-                    type: Number,
+                isBlocked: {
+                    type: Boolean,
+                    default: false, // New sellers are not blocked by default
                 },
-                purchaseDate: {
-                    type: Date,
-                    default: Date.now,
-                },
-            },
-});
 
-module.exports = mongoose.model('users', userSchema);
+                order: {
+                    products: [
+                        {
+                            productId: {
+                                type: mongoose.Schema.Types.ObjectId,
+                                ref: 'products', // Reference to the Product collection
+                            },
+                            quantity: {
+                                type: Number,
+                                min: 1,
+                            },
+                            price: {
+                                type: Number,
+                            },
+                            purchaseDate: {
+                                type: Date,
+                                default: Date.now,
+                            },
+                        }
+                    ],
+                    totalPrice: {
+                        type: Number,
+                    },
+                    purchaseDate: {
+                        type: Date,
+                        default: Date.now,
+                    },
+                },
+    });
+
+    module.exports = mongoose.model('users', userSchema);

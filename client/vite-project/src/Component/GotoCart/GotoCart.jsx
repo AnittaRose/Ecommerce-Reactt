@@ -5,11 +5,17 @@ import { useNavigate } from "react-router-dom";
 function GotoCart() {
   const navigate = useNavigate();
   const params = new URLSearchParams(window.location.search);
-  const userId = params.get('id');
+  let token_key = params.get('login');
+    let id = params.get('userId');
+
+    let token = localStorage.getItem(token_key);
+    console.log("Token:", token);
+  
   const [cartItems, setCartItems] = useState([]);
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState(localStorage.getItem("userId"));
 
   // Helper function to calculate totals
   const calculateTotals = (items) => {
@@ -26,13 +32,16 @@ function GotoCart() {
   useEffect(() => {
     const loadCartAndProducts = async () => {
       try {
-        if (!userId) {
-          console.error('Missing userId');
-          return;
-        }
+        // if (!userId) {
+        //   console.error('Missing userId');
+        //   return;
+        // }
 
         // Fetch cart items
+        const userId = localStorage.getItem("userId");
+        console.log("userId",userId);
         const cartResponse = await axios.get(`http://localhost:3000/gotoCart/${userId}`);
+        console.log("cartresponse :",cartResponse);
         if (cartResponse.status !== 200) {
           throw new Error(`Failed to fetch cart products: ${cartResponse.status}`);
         }
@@ -72,39 +81,152 @@ function GotoCart() {
 
     if (newQuantity < 1) return; // Prevent zero or negative quantities
 
-    // Optimistic UI update
+    // Optimistic UI update (update quantity locally first)
     const updatedCartItems = cartItems.map(cartItem =>
-      cartItem.productId._id === item.productId
-        ? { ...cartItem, quantity: newQuantity }
+      cartItem.productId._id === item.productId._id
+        ? { ...cartItem, quantity: newQuantity }  // Ensure the correct productId is compared
         : cartItem
     );
 
-    setCartItems(updatedCartItems);
+    setCartItems(updatedCartItems);  // Update the cart state
 
     // Calculate new total
     calculateTotals(updatedCartItems);
 
     try {
+      // Update the cart in the backend (make sure the correct request body is sent)
       await axios.post(`http://localhost:3000/updateCarts/${userId}`, {
-        productId: item.productId,
+        productId: item.productId._id,  // Send the correct productId
         newQuantity,
       });
+
+      // Optionally, you can refetch the cart data after updating to ensure consistency
     } catch (error) {
       console.error('Error updating cart:', error);
-    }
-  };
 
-  const removeCartItem = async (productId) => {
-    try {
-      const updatedItems = cartItems.filter(item => item.productId !== productId);
-      await axios.post('http://localhost:3000/RemoveCartItem', { productId });
-
-      setCartItems(updatedItems);
-      calculateTotals(updatedItems);
-    } catch (error) {
-      console.error('Error removing item:', error);
+      // Handle failure, revert optimistic update if necessary
+      setCartItems(cartItems);
+      calculateTotals(cartItems);
     }
-  };
+};
+
+
+// const removeCartItem = async (itemId) => {
+//   try {
+//     console.log(`Deleting product with ID: ${itemId}`);
+
+//     // Retrieve token from URL params and localStorage
+//     let params = new URLSearchParams(window.location.search);
+//     let token_key = params.get("login");
+//     let userId = params.get("id");
+
+//     let token = localStorage.getItem(token_key);
+
+//     if (!token) {
+//       console.error("Token is missing. Please log in.");
+//       alert("You are not logged in. Please log in first.");
+//       return;
+//     }
+
+//     if (!userId) {
+//       console.error("User ID is missing.");
+//       alert("User ID is missing. Please log in again.");
+//       return;
+//     }
+
+//     // Send DELETE request to backend API
+//     const response = await fetch(`http://localhost:3000/cart/${userId}`, {
+//       method: "DELETE",
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({ productId: itemId })  // Pass productId in the body
+//     });
+
+//     // Check if the deletion was successful
+//     if (!response.ok) {
+//       throw new Error("Failed to delete the product.");
+//     }
+
+//     const result = await response.json();
+//     console.log(`Product deleted successfully.`);
+
+//     // Update the UI to remove the item from the cart
+//     setCartItems((prevCart) => prevCart.filter((item) => item._id !== itemId));
+    
+//     alert(result.message || "Product deleted successfully.");
+
+//     // Reload the page after successful deletion to reflect changes
+//     window.location.reload();
+//   } catch (error) {
+//     console.error(`Error deleting product with ID ${itemId}:`, error);
+//     alert("Failed to delete the product. Please try again later.");
+//   }
+// };
+
+
+const removeCartItem = async (itemId) => {
+  // Check if userId or token is missing
+  if (!userId || !token) {
+      alert("User ID or token is missing. Please log in again.");
+      navigate("/login"); // Redirect to login page
+      return; // Stop the removal process if user is not logged in
+  }
+
+  try {
+      console.log(`Deleting product with ID: ${itemId}`);
+
+      // Send DELETE request to backend API
+      const response = await fetch(`http://localhost:3000/cart/${userId}`, {
+          method: "DELETE",
+          headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ productId: itemId })  // Pass productId in the body
+      });
+
+      if (!response.ok) {
+          throw new Error("Failed to delete the product.");
+      }
+
+      const result = await response.json();
+      console.log(`Product deleted successfully.`);
+
+      // Update the UI to remove the item from the cart
+      setCartItems((prevCart) => prevCart.filter((item) => item._id !== itemId));
+
+      alert(result.message || "Product deleted successfully.");
+      window.location.reload();  // Optionally reload to reflect the changes
+  } catch (error) {
+      console.error(`Error deleting product with ID ${itemId}:`, error);
+      alert("Failed to delete the product. Please try again later.");
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+// Utility function to extract userId from token (assuming JWT)
+
+const getUserIdFromToken = (token) => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1])); // Decode JWT token
+    return payload.userId;  // Assuming the userId is in the token's payload
+  } catch (error) {
+    console.error("Failed to parse token:", error);
+    return null;
+  }
+};
+
 
   const Checkout = (checkoutData, totalPrice) => {
     const encodedCheckoutData = encodeURIComponent(JSON.stringify(checkoutData));
@@ -116,35 +238,43 @@ function GotoCart() {
     return <div>Loading...</div>;
   }
 
+  const Onsok = () =>{
+    navigate(`/Buyer?login=${token_key}&id=${userId}`)
+  }
+
   return (
     <>
-    <div className='pt-3'>
-        <div className='navba'>
-            <div className='d-flex justify-content-center'>
-                <div className='px-2 pt-2'><strong>Onsko</strong></div>
-                <div className='px-2 pt-2'>Home</div>
-                <div className='px-2 pt-2'>Store</div>
-                <div className='px-2 pt-2'>About</div>
-                <div className='px-2 pt-2'>Contact</div>
-            </div>
+<div className='pt-3'>
+<div className="header">
+        <div className="logo">
+          <span onClick={() => Onsok(userid)}>onsko</span> {/* Correct usage */}
         </div>
-    </div>
+        <div className="nav">
+          <a href="#">Home</a>
+          <a href="#">shop</a>
+          <a href="#">about</a>
+          <a href="#">Contact</a>
+        </div>
+</div>
+</div>
+    
     <div className="cart-wrapper pt-5">
       {cartItems.map((item) => {
-        const imageUrl = item.productId.Images?.[0]
-          ? `http://localhost:3000/${item.productId.Images[0]}`
-          : 'http://localhost:3000/path/to/placeholder-image.jpg'; // Fallback image
+        const imageUrl = item.productId && item.productId.Images && Array.isArray(item.productId.Images) && item.productId.Images[0]
+        ? `http://localhost:3000/${item.productId.Images[0]}`
+        : 'http://localhost:3000/path/to/placeholder-image.jpg'; // Fallback image
+      
 
         return (
-          <div key={item.productId._id} className="cart-item-container">
+          <div  className="cart-item-container">
             <div className="cart-item-content">
               <div className="cart-item-image">
               <img src={imageUrl} alt={item.Title || 'Product'} className="cart-img" />
               </div>
               <div className="cart-item-details">
-                <h1 className="cart-item-title">{item.productId.Title}</h1>
-                <p className="cart-item-description">{item.productId.Description}</p>
-                <h2 className="cart-item-price">${item.productId.price}</h2>
+              <h1 className="cart-item-title">{item.productId?.Title || 'Default Title'}</h1>
+                <p className="cart-item-description">{item.productId?.Description}</p>
+                <h2 className="cart-item-price">${item.productId?.Price}</h2>
                 <h3 className="cart-item-remove" onClick={() => removeCartItem(item.productId._id)}>Remove</h3>
               </div>
               <div className="cart-item-quantity">
@@ -152,7 +282,7 @@ function GotoCart() {
                   <div className="quantity-display">{item.quantity}</div>
                   <div className="quantity-controls d-flex">
                     <button className="quantity-increase" onClick={() => handleQuantityChange(item, 1)}>+</button>
-                    <button className="quantity-decrease" onClick={() => handleQuantityChange(item, -1)}>-</button>
+                    <div className='px-4'><button className="quantity-decrease" onClick={() => handleQuantityChange(item, -1)}>-</button></div>
                   </div>
                 </div>
               </div>

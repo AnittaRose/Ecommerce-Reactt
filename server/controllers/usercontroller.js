@@ -3,12 +3,16 @@ const users = require('../db/models/users');
 const { successfunction, errorfunction } = require('../utils/responsehandler');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const Categories = require('../db/models/Categories');
+const Category = require('../db/models/Categories');
 const Addproduct = require('../db/models/Addpage');
 const usertypes = require('../db/models/users_type');
 const mongoose = require('mongoose');
-// const resetpasswords= require('../util/emailtemplates/resetpassword').resetPassword
 const sendemail =require("../utils/send-emails").sendEmail;
+const UpgradeRequest= require("../db/models/upgradeRequest");
+// const BuyerUpgarde =require("../utils/emailtemplates/BuyerUpgarde")
+const BuyerUpgarde = require("../utils/emailtemplates/Buyer").BuyerUpgarde
+const userBlock = require("../utils/emailtemplates/userBlock").userBlock
+const productBlock= require("../utils/emailtemplates/Product").productBlock
 
 // const fileUpload = require('../utils/upload').fileUpload;
 
@@ -342,7 +346,6 @@ exports.addproduct = async function (req, res) {
         });
     }
 };
-
 exports.fetchCategory = async function (req, res) {
     try {
 
@@ -439,7 +442,6 @@ exports.Sellerproducts = async function (req, res) {
         return res.status(response.statuscode).send(response);
     }
 };
-
 exports.singleproductview = async function (req,res){
     try {
         let single_id = req.params.id;
@@ -509,6 +511,8 @@ exports.soloUser = async function (req, res) {
 exports.addToCart = async (req, res) => {
     try {
         const { userId, productId, quantity } = req.body;
+        console.log("body dataaaaaaaaa",req.body);
+        console.log("userID :",userId);
 
         // Validate quantity
         if (!quantity || quantity < 1) {
@@ -660,32 +664,70 @@ exports.addToWishlist = async (req, res) => {
         );
     }
 };
+
+// exports.ViewallSellerproducts = async function (req, res) {
+//     try {
+//         let section = await Addproduct.find()
+//         console.log('section', section);
+
+//         if(section){
+//             let response = successfunction({
+//                 success : true,
+//                 message : "data fetched",
+//                 statuscode : 200,
+//                 data : section
+//             })
+//             return res.status(response.statuscode).send(response);
+//         }else{
+//             let response =errorfunction({
+//                 success : false,
+//                 statuscode : 400,
+//                 message : "sinethibg went wrong"
+//             });
+//             return res.status(response.statuscode).send(response)
+//         }
+//     } catch (error) {
+//         console.log('error', error);
+
+//     }
+// };
+
+
 exports.ViewallSellerproducts = async function (req, res) {
     try {
-        let section = await Addproduct.find()
-        console.log('section', section);
+        // Fetch all products and populate the 'Category' with the 'name' field
+        const products = await Addproduct.find()
+            .populate('Category', 'name');  // Populating 'name' field of the Category
 
-        if(section){
-            let response = successfunction({
-                success : true,
-                message : "data fetched",
-                statuscode : 200,
-                data : section
-            })
-            return res.status(response.statuscode).send(response);
-        }else{
-            let response =errorfunction({
-                success : false,
-                statuscode : 400,
-                message : "sinethibg went wrong"
+        if (products) {
+            return res.status(200).json({
+                success: true,
+                message: 'Products fetched successfully',
+                data: products,
             });
-            return res.status(response.statuscode).send(response)
+        } else {
+            return res.status(400).json({
+                success: false,
+                message: 'No products found',
+            });
         }
     } catch (error) {
-        console.log('error', error);
-
+        console.error('Error fetching products:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error',
+        });
     }
 };
+
+
+
+
+
+
+
+
+
 exports.wishlistaddedproducts = async function (req, res) {
     try {
         const { id } = req.params;  // Extract the 'id' from the request parameters
@@ -773,11 +815,6 @@ exports.wishlistaddedproducts = async function (req, res) {
 //     }
 // };
 
-
-
-
-
-
 exports.BlockSeller = async (req, res) => {
     const { id } = req.params;  // Get seller ID from URL
     const { isBlocked, reason } = req.body;  // Get block status and reason from request body
@@ -796,33 +833,21 @@ exports.BlockSeller = async (req, res) => {
             return res.status(404).json({ message: "Seller not found" });
         }
 
+        // Update the block status of the seller
         seller.isBlocked = isBlocked;
         const updatedSeller = await seller.save();
 
         console.log(`Seller status updated successfully: ${updatedSeller.isBlocked}`);
-        
-        // Send email only when the seller is blocked
-        if (isBlocked) {
-            const emailSubject = "Account Blocked Notification";
-            const emailBody = `
-                <p>Dear ${seller.name},</p>
-                <p>We regret to inform you that your account has been blocked due to the following reason:</p>
-                <blockquote>${reason}</blockquote>
-                <p>If you have any questions, please contact our support team.</p>
-                <p>Thank you,</p>
-                <p>Your Company Team</p>
-            `;
 
-            try {
-                await sendemail({
-                    to: seller.email,
-                    subject: emailSubject,
-                    html: emailBody
-                });
-                console.log("Block notification email sent successfully.");
-            } catch (emailError) {
-                console.error("Failed to send block notification email:", emailError.message || emailError);
-            }
+        // Construct the email content for the block/unblock status
+        const emailTemplate = await userBlock(seller.name, reason, isBlocked);
+
+        // Send the email using the sendEmail function
+        try {
+            await sendemail(seller.email, 'Seller Account Status Update', emailTemplate);
+            console.log('Email sent successfully.');
+        } catch (emailError) {
+            console.error('Error sending email:', emailError);
         }
 
         res.status(200).json({
@@ -834,14 +859,6 @@ exports.BlockSeller = async (req, res) => {
         res.status(500).json({ message: "Error updating block status", error: error.message });
     }
 };
-
-
-
-
-
-
-
-
 
 
 // exports.BlockSeller = async (req, res) => {
@@ -919,13 +936,14 @@ exports.BlockBuyer = async (req, res) => {
     console.log("Received request to block/unblock buyer with ID:", id);
     console.log("Request Body:", req.body);  // Log the entire body for debugging
 
+    // Validate input
     if (isBlocked === undefined || reason === undefined) {
         return res.status(400).json({ message: "Block status or reason is missing" });
     }
 
     try {
         // Find the buyer by ID
-        const buyer = await users.findById(id);  // Assuming 'buyers' is the collection
+        const buyer = await users.findById(id);  // Assuming 'users' is the collection
 
         if (!buyer) {
             console.error(`Buyer not found with ID: ${id}`);
@@ -940,16 +958,29 @@ exports.BlockBuyer = async (req, res) => {
         console.log(`Buyer status updated successfully: ${updatedBuyer.isBlocked}`);
         console.log(`Updated buyer:`, updatedBuyer);
 
+        // Prepare email notification content
+        const emailTemplate = await userBlock(buyer.name, reason, isBlocked);
+
+        // Send the email using the sendemail function
+        try {
+            await sendemail(buyer.email, 'Account Status Update', emailTemplate);
+            console.log('Email sent successfully.');
+        } catch (emailError) {
+            console.error('Error sending email:', emailError);
+        }
+
         // Return a successful response
         res.status(200).json({
             message: `Buyer ${isBlocked ? "blocked" : "unblocked"} successfully`,
             buyer: updatedBuyer,
         });
+
     } catch (error) {
         console.error("Error updating block status:", error);
         res.status(500).json({ message: "Error updating block status", error: error.message });
     }
 };
+
 exports.deleteproduct = async (req, res) => {
     try {
         const delete_id = req.params.id;
@@ -1616,19 +1647,18 @@ exports.ViewWishlist = async (req, res) => {
     }
 };
 exports.BlockProduct = async (req, res) => {
-    const { id } = req.params; // Get product ID from URL
-    const { isBlocked, reason } = req.body; // Get block status and reason from request body
+    const { id } = req.params;
+    const { isBlocked, reason } = req.body;
+    console.log("reson",reason);
 
-    // Log incoming data
     console.log("Received request to block/unblock product with ID:", id);
-    console.log("Request Body:", req.body); // Log the entire body for debugging
+    console.log("Request Body:", req.body);
 
     if (isBlocked === undefined || reason === undefined) {
         return res.status(400).json({ message: "Block status or reason is missing" });
     }
 
     try {
-        // Find the product by ID
         const product = await Addproduct.findById(id);
 
         if (!product) {
@@ -1636,16 +1666,38 @@ exports.BlockProduct = async (req, res) => {
             return res.status(404).json({ message: "Product not found" });
         }
 
-        // Update the block status and reason
         product.isBlocked = isBlocked;
-        product.blockReason = isBlocked ? reason : null; // Store the reason only when blocking
+        product.blockReason = isBlocked ? reason : null;
 
-        // Save the updated product
         const updatedProduct = await product.save();
         console.log(`Product status updated successfully: ${updatedProduct.isBlocked}`);
         console.log(`Updated product:`, updatedProduct);
 
-        // Return a successful response
+
+
+        // Log the email before sending to ensure it's correct
+         let seller = await users.findOne({_id : updatedProduct.userId});
+         let seller_email = seller.email;      
+
+
+        // Send email with error handling
+        try {
+            const emailTemplate = await productBlock(seller.name, reason, isBlocked);
+            await sendemail(seller_email, 'Product Status Update', emailTemplate);
+            console.log('Email sent successfully.');
+        } catch (emailError) {
+            // Log the complete email error object for debugging
+            console.error('Failed to send email:', emailError);
+
+            // Additional debug logging for emailError details
+            if (emailError.response) {
+                console.error('Email Error Response:', emailError.response);
+            }
+            if (emailError.code) {
+                console.error('Email Error Code:', emailError.code);
+            }
+        }
+
         res.status(200).json({
             message: `Product ${isBlocked ? "blocked" : "unblocked"} successfully`,
             product: updatedProduct,
@@ -1655,6 +1707,9 @@ exports.BlockProduct = async (req, res) => {
         res.status(500).json({ message: "Error updating block status", error: error.message });
     }
 };
+
+
+
 exports.gotoCart = async (req, res) => {
     try {
       // Extract the user ID from the route parameters
@@ -1829,32 +1884,207 @@ exports.deleteseedetailsproducts = async (req,res) =>{
     }
 
 }
-// exports.requestUpgrade =async (req, res, next) => {
-//         try {
-//             const userId = req.user.id;
-//             const { companyName, license } = req.body;
 
-//             if (!companyName || !license) {
-//                 return res.status(400).send({ message: 'Company name and license are required' });
-//             }
 
-//             const newRequest = new UpgradeRequest({
-//                 userId,
-//                 companyName,
-//                 license,
-//                 status: 'pending'
-//             });
+exports.deletewishlistproducts = async (req, res) => {
+    try {
+      const { itemId } = req.params; // productId ലഭിക്കുന്നു
+  
+      // Find the user and remove the product from their wishlist
+      const user = await users.findOneAndUpdate(
+        { "wishlist.productId": itemId },  // Check if the product exists in the wishlist
+        { $pull: { wishlist: { productId: itemId } } }, // Remove the product by productId
+        { new: true } // Return the updated document
+      );
+  
+      if (!user) {
+        return res.status(404).json({ message: 'Wishlist item not found.' });
+      }
+  
+      res.status(200).json({ message: `Wishlist product with ID: ${itemId} deleted successfully.` });
+    } catch (error) {
+      console.error('Error deleting wishlist product:', error);
+      res.status(500).json({ message: 'Failed to delete wishlist product. Please try again later.' });
+    }
+};
 
-//             const savedRequest = await newRequest.save();
-//             res.status(201).send({
-//                 message: 'Upgrade request submitted successfully',
-//                 data: savedRequest
-//             });
 
-//         } catch (error) {
-//             next(error); 
-//         }
-// }
+exports.deleteaddtocarttproducts = async (req, res) => {
+    const { userId } = req.params; // Assuming the user ID is in the params
+    const { productId } = req.body; // Extract productId from the request body
+
+    try {
+        // Find and update the user's cart
+        const updatedUser = await users.findByIdAndUpdate(
+            userId,
+            {
+                $pull: { 'addCart.0.items': { productId } } // Pull the item with the matching productId from the first cart (index 0)
+            },
+            { new: true } // Return the updated user document
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Assuming addCart[0] is the cart you're working with
+        const remainingItems = updatedUser.addCart[0].items;
+        const updatedTotalPrice = remainingItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
+
+        // Update the totalPrice field in the document
+        updatedUser.addCart[0].totalPrice = updatedTotalPrice;
+        await updatedUser.save();
+
+        res.status(200).json({
+            message: 'Product removed from cart successfully',
+            cart: updatedUser.addCart[0], // Return the updated first cart
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error removing product from cart', error });
+    }
+};
+  
+
+
+exports.UpgradeRequest = async (req, res) => {
+    try {
+      const { userId, companyName, licenseNumber } = req.body;
+  
+      if (!userId || !companyName || !licenseNumber) {
+        return res.status(400).json({ message: 'All fields are required' });
+      }
+  
+      // Create a new upgrade request
+      const newRequest = new UpgradeRequest({
+        userId,
+        companyName,
+        licenseNumber,
+        status: 'pending',  // Default status is 'pending'
+      });
+  
+      // Save the request to the database
+      await newRequest.save();
+  
+      // Respond with a success message
+      return res.status(200).json({ message: 'Upgrade request submitted successfully!' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Error processing the upgrade request', error: error.message });
+    }
+};
+
+exports.getAllUpgradeRequests = async (req, res) => {
+    try {
+      // Fetch all upgrade requests from the database
+      const upgradeRequests = await UpgradeRequest.find();
+  
+      // If there are no requests, return a message
+      if (upgradeRequests.length === 0) {
+        return res.status(404).json({ message: 'No upgrade requests found' });
+      }
+  
+      // Send the list of upgrade requests as the response
+      res.status(200).json(upgradeRequests);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'An error occurred while fetching upgrade requests' });
+    }
+};
+
+exports.approveupgrade = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        // Log the userId for debugging
+        console.log('Received userId:', userId);
+        console.log('Request params:', req.params);  // Log entire request params for debugging
+
+        // Ensure userId matches correctly and query the UpgradeRequest collection
+        const request = await UpgradeRequest.findOne({ userId: String(userId) });
+
+        if (!request) {
+            console.log('No request found with userId:', userId);
+            return res.status(404).json({ message: 'Request not found' });
+        }
+
+        // Update request status
+        request.status = 'approved';
+        await request.save();
+
+        // Fetch user details
+        const user = await users.findOneAndUpdate(
+            { _id: new mongoose.Types.ObjectId(userId) }, // Correctly using ObjectId
+            { role: 'seller' },
+            { new: true }
+        );
+
+        if (!user) {
+            console.log('User not found with userId:', userId);
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Prepare upgrade details for email
+        const upgradeDetails = {
+            upgradeType: 'Manual Upgrade from Admin',  // You can change this depending on the upgrade type
+        };
+
+        // Prepare the email content
+        const emailTemplate = await BuyerUpgarde(user.name, upgradeDetails);
+     
+
+
+        // Send the email using the sendEmail function
+        try {
+            await sendemail(user.email, 'Seller Upgrade Notification', emailTemplate);
+            console.log('Email sent successfully.');
+        } catch (emailError) {
+            console.error('Error sending email:', emailError);
+        }
+
+        // Send the updated user information back
+        res.status(200).json({ message: 'Request approved and role updated successfully', user });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred', error });
+    }
+};
+
+exports.categoryy = async (req, res) => {
+    try {
+      // Fetch categories from the database
+      const categories = await Categories.find(); // Modify this query based on your model
+  
+      // If categories are not found
+      if (!categories || categories.length === 0) {
+        return res.status(404).json({ message: 'No categories found' });
+      }
+  
+      // Send the categories as a JSON response
+      res.status(200).json({
+        data: categories
+      });
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
+  
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+
 
 
 

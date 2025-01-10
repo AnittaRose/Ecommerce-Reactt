@@ -26,64 +26,82 @@ function OnsokHomePage() {
     return (
 
         <>
-            <div className="p-4">
+<div className="pt-3">
+<div className="header ">
+        <div className="logo">
+          <span onClick={() => Onsok(userid)}>onsko</span> {/* Correct usage */}
+        </div>
+        <div className="nav">
+          {/* <a href="#">home</a> */}
+          <Link to="/OnsokHomePage" className="">Home</Link>
+          <Link to="/Shop" className="login11 link-light">Shop</Link>
+          <Link to="/About" className="login11 link-light">About</Link>
+          <Link to="/Contact" className="login11 link-light">Contact</Link>
+          <Link to="/Login" className="login11 link-light">Login</Link>
+          <Link to="/Signup" className="login11 link-light">Signup</Link>
+
+          
+        </div>
+      </div>
+</div>
+            {/* <div className="p-4">
                 <div className="d-flex justify-content-evenly navbarrr">
                     <div className="d-flex">
-                        <div className=" Onsko11 p-2 pt-1">Onsko</div>
+                        <div className=" Onsko11 p-2 pt-1 link-light">Onsko</div>
                         <div className="home p-2">
-                            <a href="./index.html" className="login11">
+                            <a href="./index.html" className="login11 link-light">
                                 Home
                             </a>
                         </div>
-                        <div className="home p-2">
-                            <a href="./Bestsellers.html" className="login11">
-                                Store
-                            </a>
-                        </div>
-                        <div className="home p-2">
-                            <a href="./About.html" className="login11">
+                        {/* <div className="home p-2"> */}
+                        {/* <div className="p-2 home">
+                            <Link to="/Shop" className="login11 link-light">Shop</Link>
+                        </div> */}
+                        {/* </div> */}
+                        {/* <div className="home p-2">
+                            <a href="./About.html" className="login11 link-light">
                                 About
-                            </a>
-                        </div>
+                            </a> */}
+                        {/* </div>
                         <div className="home p-2">
-                            <a href="./Contact.html" className="login11">
+                            <a href="./Contact.html" className="login11 link-light">
                                 Contact
                             </a>
-                        </div>
-                    </div>
+                        </div> */}
+                    {/* </div>
                     <div className="d-flex">
                         <div className="p-2 home">
-                        <Link to="/Login" className="login11">Login</Link>
+                        <Link to="/Login" className="login11 link-light">Login</Link>
                         </div>
                         <div className="p-2 home">
-                        <Link to="/Signup" className="login11">Signup</Link>
-                        </div>
+                        <Link to="/Signup" className="login11 link-light">Signup</Link>
+                        </div> */}
                         
                        
-                        <div className="p-2 home">
+                        {/* <div className="p-2 home">
                             <img
                                 src="https://img.icons8.com/?size=100&id=15893&format=png&color=000000"
                                 alt=""
                                 className="cartcart"
                             />
-                        </div>
-                        <div className="p-2 home">
+                        </div> */}
+                        {/* <div className="p-2 home">
                             <img
                                 src="https://img.icons8.com/?size=100&id=87&format=png&color=000000"
                                 alt=""
                                 className="whishlisttt"
                             />
                         </div>
-                        <div className="p-2 home">
-                            <img
+                        <div className="p-2 home"> */}
+                            {/* <img
                                 src="https://img.icons8.com/?size=100&id=132&format=png&color=000000"
                                 alt=""
                                 className="searchh"
-                            />
-                        </div>
+                            /> */}
+                        {/* </div>
                     </div>
                 </div>
-            </div>
+            </div> */} 
             <div className="image-container">
                  <img src="https://static.wixstatic.com/media/84770f_a4e5aee60e58478a8781128441765935~mv2.jpg/v1/crop/x_45,y_89,w_2955,h_1767/fill/w_2522,h_1356,fp_0.50_0.50,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/fold1_hero%20(1).jpg" className="orangegurlsimg"></img>
         

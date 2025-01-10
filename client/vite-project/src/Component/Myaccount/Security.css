@@ -1,0 +1,50 @@
+.signin-container {
+    border: 1px solid #ddd;
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 350px;
+    text-align: center;
+    /* align-items: center;/ */
+}
+.signin-container .form-control {
+    margin-bottom: 10px;
+}
+.signin-container .btn-primary {
+    background-color: #ffd814;
+    border-color: #fcd200;
+    color: #111;
+    width: 100%;
+}
+.signin-container .btn-secondary {
+    background-color: #f0f0f0;
+    border-color: #dcdcdc;
+    color: #111;
+    width: 100%;
+}
+.signin-container .form-check-label {
+    font-size: 0.9rem;
+}
+.signin-container .details {
+    font-size: 0.8rem;
+    color: #007185;
+}
+.signin-container .or-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px 0;
+}
+.signin-container .or-divider::before,
+.signin-container .or-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+}
+.signin-container .or-divider:not(:empty)::before {
+    margin-right: .25em;
+}
+.signin-container .or-divider:not(:empty)::after {
+    margin-left: .25em;
+}

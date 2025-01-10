@@ -1,0 +1,118 @@
+.sidebar {
+    height: 100vh;
+    background-color: #ffffff;
+    border-right: 1px solid #e0e0e0;
+}
+.sidebar .nav-link {
+    color: #6c757d;
+}
+.sidebar .nav-link.active {
+    color: #007bff;
+}
+.profile-header {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 20px;
+    position: relative;
+}
+.profile-header img {
+    border-radius: 50%;
+    border: 3px solid #ffffff;
+}
+.profile-header .change-cover {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #ffffff;
+    color: #007bff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+.profile-card {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: -50px;
+}
+.profile-card img {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+}
+.profile-card .stats {
+    margin-top: 20px;
+}
+.profile-card .stats .stat {
+    margin-bottom: 10px;
+}
+.profile-card .stats .stat span {
+    font-weight: bold;
+}
+.profile-card .view-profile {
+    margin-top: 20px;
+}
+.profile-card .view-profile a {
+    color: #007bff;
+    text-decoration: none;
+}
+.profile-card .view-profile a:hover {
+    text-decoration: underline;
+}
+.profile-card .profile-link {
+    margin-top: 20px;
+}
+.profile-card .profile-link input {
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 5px;
+}
+.profile-card .profile-link button {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+.profile-settings {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+}
+.profile-settings .nav-tabs .nav-link {
+    color: #6c757d;
+}
+.profile-settings .nav-tabs .nav-link.active {
+    color: #007bff;
+    border-color: #007bff;
+}
+.profile-settings .form-group {
+    margin-bottom: 15px;
+}
+.profile-settings .form-group label {
+    font-weight: bold;
+}
+.profile-settings .form-group input {
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 5px;
+}
+.profile-settings .form-group select {
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 5px;
+}
+.profile-settings .update-button {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+}

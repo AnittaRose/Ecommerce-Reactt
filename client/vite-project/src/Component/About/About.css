@@ -1,0 +1,42 @@
+.containerss {
+    background-color: #add8e6;
+    text-align: center;
+    padding: 50px 20px;
+    border-radius: 20px;
+    margin: 20px;
+}
+.containerss h1 {
+    font-size: 2em;
+    font-weight: 700;
+    color: #2f4f4f;
+    margin: 0;
+}
+.containerss p {
+    font-size: 1.5em;
+    font-weight: 400;
+    color: #2f4f4f;
+    margin: 20px 0;
+}
+.containerss .subtext {
+    font-size: 1em;
+    font-weight: 400;
+    color: #2f4f4f;
+    margin-top: 20px;
+}
+@media (max-width: 600px) {
+    .containerss {
+        padding: 30px 10px;
+    }
+    .containerss h1 {
+        font-size: 1.5em;
+    }
+    .containerss p {
+        font-size: 1.2em;
+    }
+    .containerss .subtext {
+        font-size: 0.9em;
+    }
+}
+.wwhite{
+    background-color: white;
+}

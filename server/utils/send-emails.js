@@ -1,7 +1,7 @@
 "use strict";
 const nodemailer = require("nodemailer");
-const dotenv =require('dotenv')
-dotenv.config()
+const dotenv = require('dotenv');
+dotenv.config();
 
 exports.sendEmail = async function (emails, subject, content) {
   return new Promise(async (resolve, reject) => {

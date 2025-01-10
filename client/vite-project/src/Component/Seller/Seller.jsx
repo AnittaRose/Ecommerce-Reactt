@@ -110,7 +110,7 @@ const MyAccount = () => {
 };
 
     const Single = (id) => {
-      navigate(`/Single?login=${token_key}&id=${id}`);
+      navigate(`/Single?login=${token_key}&productId=${id}&userId=${userId}`);
     };
 
     const Edit = (id) => {
@@ -142,7 +142,9 @@ const MyAccount = () => {
         </div>
 
         <div className='d-flex'>
+          {/* <div className=''></div> */}
           <div className="px-2 ">
+   
             {user && (
               <div className="text-center dropdown">
                 <button className="drop"><strong>Hello,</strong> {user.name || 'Guest'}</button>

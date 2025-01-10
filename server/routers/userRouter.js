@@ -46,8 +46,14 @@ router.get('/Singlee/:id',usercontroller.SingleproductEdit);
 router.put('/update/:id', usercontroller.updateProduct);
 router.delete('/DeleteSeedetails/:id',usercontroller.deleteseedetailsproducts);
 // router.delete('/RemoveFromWishlist/:userId/:productId', usercontroller.RemoveFromWishlist);
-// router.delete('/deleteWishlist/:productId',usercontroller.)
-// router.post('/UpgradeSeller',usercontroller.requestUpgrade);
+router.delete('/wishlistproducts/:itemId',usercontroller.deletewishlistproducts)
+router.delete('/cart/:userId',usercontroller.deleteaddtocarttproducts);
+router.post('/submitUpgradeRequest',usercontroller.UpgradeRequest)
+router.get('/upgradeRequests', usercontroller.getAllUpgradeRequests);
+router.put('/approveUpgrade/:userId',usercontroller.approveupgrade);
+router.get('/categories',usercontroller.categoryy);
+
+
 
 
 

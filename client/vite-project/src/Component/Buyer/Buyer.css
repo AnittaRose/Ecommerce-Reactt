@@ -7,8 +7,11 @@
     height: 9vh;
 }
 .dropbtttn{
-    background-color: orangered;
+    background-color:#A33B1F;
     /* height: 20vh; */
+}
+.dropbtttn:hover{
+    background-color:#A33B1F;
 }
 .greenn{
     background-color:#2D5143;

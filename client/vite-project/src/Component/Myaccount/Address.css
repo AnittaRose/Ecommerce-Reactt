@@ -1,0 +1,33 @@
+.breadcrumb-item+.breadcrumb-item::before {
+    content: "›";
+}
+.address-card, .add-address-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 8px 0;
+    height: 100%;
+}
+.address-card.default {
+    border-color: #f0c14b;
+}
+.add-address-card {
+    border: 2px dashed #ddd;
+    text-align: center;
+    color: #555;
+}
+.add-address-card:hover {
+    cursor: pointer;
+    background-color: #f9f9f9;
+}
+.add-address-card i {
+    font-size: 24px;
+    color: #888;
+}
+.address-actions a {
+    color: #007bff;
+    text-decoration: none;
+}
+.address-actions a:hover {
+    text-decoration: underline;
+}

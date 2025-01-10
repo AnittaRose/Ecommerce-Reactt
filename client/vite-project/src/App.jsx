@@ -38,9 +38,23 @@ import SeeDetails from "./Component/SeeDetails/SeeDetails";
 import SingleproductEdit from "./Component/Seller/SingleproductEdit";
 import './Component/Seller/SingleproductEdit.css'
 import Singlee from "./Component/SeeDetails/Singlee";
-
-
-
+import UpgradeRequestPage from "./Component/Request/UpgradeRequestPage";
+import AdminApproveRequests from "./Component/AdminDashboard/ApproveUpgradeRequest";
+import './Component/Request/UpgradeRequestPage.css'
+import Shop from "./Component/Shop/Shop";
+import './Component/Shop/Shop.css'
+import About from "./Component/About/About";
+import './Component/About/About.css'
+import Contact from "./Component/Contact/Contact";
+import './Component/Contact/Contact.css'
+import Profile from "./Component/Profile/Profile";
+import './Component/Profile/Profile.css'
+import Llogin from "./Component/Myaccount/Security";
+import './Component/Myaccount/Security.css'
+import Prime from "./Component/Myaccount/Prime";
+import './Component/Myaccount/Prime.css'
+import Address from "./Component/Myaccount/Address";
+import './Component/Myaccount/Address.css'
 function App() {
   return (
     <>
@@ -71,6 +85,15 @@ function App() {
           <Route path="/SeeDetails" element={<SeeDetails />}/>
           <Route path="/SingleproductEdit" element={<SingleproductEdit />}/>
           <Route path="/Singlee" element={<Singlee />}/>
+          <Route path="/UpgradeRequestPage" element={<UpgradeRequestPage />}/>
+          <Route path="/AdminApproveRequests" element={<AdminApproveRequests />}/>
+          <Route path="/Shop" element={<Shop />}/>
+          <Route path="/About" element={<About />}/>
+          <Route path="/Contact" element={<Contact />}/>
+          <Route path="/Profile" element={<Profile />}/>
+          <Route path="/Llogin" element={<Llogin />}/>
+          <Route path="/Prime" element={<Prime />}/>
+          <Route path="/Address" element={<Address />}/>
         </Routes>
       </Router>
     </>
